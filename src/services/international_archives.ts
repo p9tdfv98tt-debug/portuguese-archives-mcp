@@ -24,7 +24,7 @@ export interface InternationalArchivesResult {
       title: string;
       url: string;
       description: string;
-      familyContext: string;
+      usefulFor: string;
     }>;
   };
   academiaEdu: {
@@ -34,7 +34,7 @@ export interface InternationalArchivesResult {
       title: string;
       url: string;
       description: string;
-      familyContext: string;
+      usefulFor: string;
     }>;
   };
   brazilSian: {
@@ -44,7 +44,7 @@ export interface InternationalArchivesResult {
       fonds: string;
       url: string;
       description: string;
-      familyContext: string;
+      usefulFor: string;
     }>;
   };
   brazilApesp: {
@@ -54,7 +54,7 @@ export interface InternationalArchivesResult {
       title: string;
       url: string;
       description: string;
-      familyContext: string;
+      usefulFor: string;
     }>;
   };
   ultramarAhu: {
@@ -64,7 +64,7 @@ export interface InternationalArchivesResult {
       title: string;
       url: string;
       description: string;
-      familyContext: string;
+      usefulFor: string;
     }>;
   };
 }
@@ -83,16 +83,16 @@ export function searchInternationalArchives(options: InternationalArchivesQuery)
       googleScholarUrl: `https://scholar.google.com/scholar?q=${encodeURIComponent(`site:researchgate.net "${rawQuery}"`)}`,
       directResources: [
         {
-          title: "A Indústria Conserveira na Nazaré (1910-1925)",
-          url: "https://www.researchgate.net/search/publication?q=industria+conserveira+Nazar%C3%A9",
-          description: "Estudos de arqueologia industrial e história económica do mar português, documentando sociedades comerciais e escrituras de sócios.",
-          familyContext: "Famílias de comerciantes e industriais da Nazaré"
+          title: "Emigração portuguesa (séculos XIX-XX)",
+          url: "https://www.researchgate.net/search/publication?q=emigra%C3%A7%C3%A3o+portuguesa",
+          description: "Estudos sobre fluxos migratórios portugueses para o Brasil, Américas e Europa.",
+          usefulFor: "Antepassados que emigraram"
         },
         {
-          title: "Estudos de Comunidades Marítimas e Mareantes de Longo Curso da Costa Portuguesa",
-          url: "https://www.researchgate.net/search/publication?q=mareantes+Pederneira+Nazare",
-          description: "Pesquisas antropológicas e históricas sobre mestres do mar, confrarias e navegação atlântica na Nazaré e Pederneira.",
-          familyContext: "Famílias de mareantes e mestres do mar"
+          title: "Demografia histórica e registos paroquiais em Portugal",
+          url: "https://www.researchgate.net/search/publication?q=registos+paroquiais+demografia+hist%C3%B3rica+Portugal",
+          description: "Investigação sobre fontes paroquiais, mortalidade, nupcialidade e famílias.",
+          usefulFor: "Interpretar e localizar registos paroquiais"
         }
       ]
     },
@@ -101,22 +101,16 @@ export function searchInternationalArchives(options: InternationalArchivesQuery)
       googleScholarUrl: `https://scholar.google.com/scholar?q=${encodeURIComponent(`site:academia.edu "${rawQuery}"`)}`,
       directResources: [
         {
-          title: "Estudos da Indústria Conserveira da Nazaré",
-          url: "https://www.academia.edu/search?q=industria+conserveira+Nazar%C3%A9",
-          description: "Estudos académicos sobre a indústria conserveira, adubos de peixe e os capitais dos mareantes da Nazaré.",
-          familyContext: "Sócios e capitalistas da indústria conserveira"
+          title: "Genealogia e história da família em Portugal",
+          url: "https://www.academia.edu/search?q=genealogia+Portugal",
+          description: "Artigos sobre metodologia genealógica, linhagens e fontes arquivísticas portuguesas.",
+          usefulFor: "Métodos e fontes de pesquisa genealógica"
         },
         {
-          title: "História dos Mareantes da Pederneira e Navegação de Longo Curso",
-          url: "https://www.academia.edu/search?q=mareantes+Pederneira+Nazar%C3%A9",
-          description: "Teses e artigos de história marítima sobre pilotos e frotas atlânticas da Nazaré.",
-          familyContext: "Pilotos e famílias de navegação atlântica"
-        },
-        {
-          title: "Imprensa e Sociedade Urbana em Lisboa nos Anos 20",
-          url: "https://www.academia.edu/search?q=imprensa+Lisboa+anos+20",
-          description: "Investigações sobre periódicos lisboetas e a vida social do Bairro Camões em 1927.",
-          familyContext: "Jornalistas, editores e fundadores de periódicos"
+          title: "História local e municipal portuguesa",
+          url: "https://www.academia.edu/search?q=hist%C3%B3ria+local+Portugal",
+          description: "Monografias e estudos sobre concelhos, freguesias, ofícios e comunidades.",
+          usefulFor: "Contexto histórico da terra de origem"
         }
       ]
     },
@@ -128,13 +122,13 @@ export function searchInternationalArchives(options: InternationalArchivesQuery)
           fonds: "Relações de Vapores e Desembarque de Passageiros (Porto de Santos e Rio de Janeiro)",
           url: "https://sian.an.gov.br/",
           description: "Registos oficiais de entrada de passageiros portugueses e imigrantes por via marítima no Brasil.",
-          familyContext: "Chegada e fixação de imigrantes portugueses no Brasil"
+          usefulFor: "Chegada e fixação de imigrantes portugueses no Brasil"
         },
         {
           fonds: "Processos de Estrangeiros e Naturalização (Ministério da Justiça e Negócios Interiores)",
           url: "https://sian.an.gov.br/",
           description: "Dossiês de residência definitiva, vistos, passaportes e atividades de cidadãos portugueses no Brasil.",
-          familyContext: "Ramos familiares radicados no Estado de São Paulo"
+          usefulFor: "Ramos familiares radicados no Estado de São Paulo"
         }
       ]
     },
@@ -146,13 +140,13 @@ export function searchInternationalArchives(options: InternationalArchivesQuery)
           title: "Base de Dados de Imigrantes do Porto de Santos & Hospedaria do Brás",
           url: "http://www.arquivoestado.sp.gov.br/imigracao/",
           description: "Livros de matrícula, desembarque e acolhimento de imigrantes no Estado de São Paulo.",
-          familyContext: "Entrada e registo de imigrantes em São Paulo"
+          usefulFor: "Entrada e registo de imigrantes em São Paulo"
         },
         {
           title: "Acervo Notarial e Cartórios do Estado de São Paulo",
           url: "http://www.arquivoestado.sp.gov.br/",
           description: "Escrituras públicas, registos comerciais e certidões civis de óbito e matrimónio da capital paulista.",
-          familyContext: "Registos civis de óbito e negócios de imigrantes"
+          usefulFor: "Registos civis de óbito e negócios de imigrantes"
         }
       ]
     },
@@ -161,16 +155,16 @@ export function searchInternationalArchives(options: InternationalArchivesQuery)
       digitarqAhuUrl: `https://digitarq.ahu.arquivos.pt/search?query=${q}`,
       collections: [
         {
-          title: "Fundo da Direção-Geral do Ensino do Ultramar (DGEU) - Moçambique",
+          title: "Processos individuais de funcionários e professores do Ultramar",
           url: "https://digitarq.ahu.arquivos.pt/",
-          description: "Processos individuais de professores oficiais e liceais colocados em Lourenço Marques, Beira e províncias ultramarinas.",
-          familyContext: "Professores colocados no ultramar (ex.: Moçambique)"
+          description: "Processos de funcionários públicos, militares e professores colocados em Angola, Moçambique, Cabo Verde, Guiné, São Tomé, Índia, Macau e Timor.",
+          usefulFor: "Antepassados que viveram ou trabalharam nas antigas colónias"
         },
         {
           title: "Conselho Ultramarino e Ministério das Colónias / Ultramar",
           url: "https://ahu.dglab.gov.pt/",
-          description: "Despachos, comissões de serviço e licenças de passagem de funcionários públicos e professores entre a Metrópole e Moçambique.",
-          familyContext: "Historial de serviço público ultramarino"
+          description: "Despachos, comissões de serviço e licenças de passagem de funcionários públicos e professores entre a Metrópole e o Ultramar.",
+          usefulFor: "Historial de serviço público ultramarino"
         }
       ]
     }

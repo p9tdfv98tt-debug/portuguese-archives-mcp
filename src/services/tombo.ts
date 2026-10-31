@@ -25,51 +25,77 @@ export interface TomboParishResult {
   matchedBooks?: TomboBookLink[];
 }
 
-// Common municipality and parish code dictionary for instant high-speed resolution
-const parishCodeMap: Record<string, { code: string; name: string; mun: string; dist: string }> = {
-  "pederneira": { code: "nzr02", name: "Pederneira (Nossa Senhora da Pederneira)", mun: "Nazaré", dist: "Leiria" },
-  "nazare": { code: "nzr02", name: "Nazaré (Pederneira)", mun: "Nazaré", dist: "Leiria" },
-  "camacha": { code: "scr03", name: "Camacha", mun: "Santa Cruz", dist: "Madeira" },
-  "porto da cruz": { code: "mch05", name: "Porto da Cruz", mun: "Machico", dist: "Madeira" },
-  "machico": { code: "mch01", name: "Machico", mun: "Machico", dist: "Madeira" },
-  "santo antonio da serra": { code: "mch05", name: "Santo António da Serra", mun: "Machico", dist: "Madeira" },
-  "santa maria maior": { code: "fch04", name: "Santa Maria Maior (Funchal)", mun: "Funchal", dist: "Madeira" },
-  "se funchal": { code: "fch10", name: "Sé (Funchal)", mun: "Funchal", dist: "Madeira" },
-  "monte": { code: "fch02", name: "Monte (Funchal)", mun: "Funchal", dist: "Madeira" },
-  "alcobaca": { code: "acb01", name: "Alcobaça", mun: "Alcobaça", dist: "Leiria" },
-  "peniche": { code: "pnc01", name: "Peniche", mun: "Peniche", dist: "Leiria" },
-};
+function normalize(text: string): string {
+  return text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim();
+}
 
-export function resolveTomboUrl(query: TomboParishQuery): string {
-  const normParish = (query.parish || "").toLowerCase().trim();
-  const normMun = (query.municipality || "").toLowerCase().trim();
+function slugify(text: string): string {
+  return normalize(text).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 
-  for (const [key, val] of Object.entries(parishCodeMap)) {
-    if (normParish.includes(key) || normMun.includes(key)) {
-      return `https://tombo.pt/f/${val.code}`;
-    }
+function fetchText(url: string): Promise<{ status: number; body: string }> {
+  return new Promise((resolve) => {
+    https
+      .get(url, { agent, headers: { "User-Agent": "Mozilla/5.0" } }, (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => resolve({ status: res.statusCode || 0, body: data }));
+      })
+      .on("error", () => resolve({ status: 0, body: "" }));
+  });
+}
+
+export function tomboSearchUrl(text: string): string {
+  return `https://tombo.pt/search?keys=${encodeURIComponent(text)}`;
+}
+
+/**
+ * Find a parish page on Tombo.pt. Parish pages use internal codes (e.g. /f/scr02), so the
+ * parish is looked up with Tombo's own search and each candidate page is checked by title,
+ * and by municipality when one is given.
+ */
+async function findParishPage(parish: string, municipality?: string): Promise<string | undefined> {
+  const keys = municipality ? `${parish} ${municipality}` : parish;
+  let { body } = await fetchText(tomboSearchUrl(keys));
+  let codes = [...new Set([...body.matchAll(/href="(?:https:\/\/tombo\.pt)?\/f\/([a-z0-9]+)"/g)].map((m) => m[1]))];
+  if (codes.length === 0 && municipality) {
+    ({ body } = await fetchText(tomboSearchUrl(parish)));
+    codes = [...new Set([...body.matchAll(/href="(?:https:\/\/tombo\.pt)?\/f\/([a-z0-9]+)"/g)].map((m) => m[1]))];
   }
 
+  const wanted = normalize(parish);
+  const town = municipality ? normalize(municipality) : undefined;
+  let fallback: string | undefined;
+  for (const code of codes.slice(0, 8)) {
+    const url = `https://tombo.pt/f/${code}`;
+    const page = await fetchText(url);
+    const title = normalize(page.body.match(/<title>([^<|]*)/i)?.[1] || "");
+    if (!title) continue;
+    const titleMatches = title === wanted || title.includes(wanted) || wanted.includes(title);
+    if (titleMatches && (!town || normalize(page.body).includes(town))) return url;
+    // Tombo files some town-centre parishes (e.g. Santa Maria Maior, Chaves) under the town's name
+    if (titleMatches || title === town) fallback ??= url;
+  }
+  return fallback;
+}
+
+export async function resolveTomboUrl(query: TomboParishQuery): Promise<string> {
   if (query.parish) {
-    const slug = query.parish.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
-    return `https://tombo.pt/f/${slug}`;
-  }
-
-  if (query.municipality) {
-    const slug = query.municipality.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
-    return `https://tombo.pt/m/${slug}`;
+    const page = await findParishPage(query.parish, query.municipality);
+    if (page) return page;
   }
 
   if (query.district) {
-    const slug = query.district.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
-    return `https://tombo.pt/d/${slug}`;
+    const url = `https://tombo.pt/d/${slugify(query.district)}`;
+    if ((await fetchText(url)).status === 200) return url;
   }
 
-  return "https://tombo.pt/";
+  const text = [query.parish, query.municipality, query.district].filter(Boolean).join(" ");
+  return text ? tomboSearchUrl(text) : "https://tombo.pt/";
 }
 
 export async function getTomboParishBooks(query: TomboParishQuery): Promise<TomboParishResult> {
-  const tomboUrl = resolveTomboUrl(query);
+  const tomboUrl = await resolveTomboUrl(query);
 
   return new Promise((resolve) => {
     https.get(tomboUrl, { agent, headers: { "User-Agent": "Mozilla/5.0" } }, (res) => {
@@ -85,11 +111,12 @@ export async function getTomboParishBooks(query: TomboParishQuery): Promise<Tomb
           const href = match[1];
           const text = match[2].replace(/<[^>]+>/g, "").trim();
 
-          if (href.includes("digitarq") || href.includes("arquivos.pt") || href.includes("familysearch")) {
+          const isArchiveLink = /digitarq|arquivos\.pt|dglab\.gov\.pt|arquivo-abm\.madeira|azores\.gov\.pt|familysearch/.test(href);
+          if (isArchiveLink && text && !/^https?:/.test(text)) {
             let type = "Geral";
-            if (/batismo|baptismo|bap/i.test(text) || href.includes("PNZR02/001") || href.includes("PNZR02/004")) type = "Batismos";
-            else if (/casamento|matrim/i.test(text) || href.includes("002")) type = "Casamentos";
-            else if (/obito|ob/i.test(text) || href.includes("003")) type = "Óbitos";
+            if (/batismo|baptismo|bap/i.test(text)) type = "Batismos";
+            else if (/casamento|matrim/i.test(text)) type = "Casamentos";
+            else if (/[oó]bito/i.test(text)) type = "Óbitos";
             else if (/passaporte/i.test(text)) type = "Passaportes";
 
             if (query.year && !text.includes(String(query.year))) {

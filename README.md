@@ -8,7 +8,7 @@ A specialized Model Context Protocol (MCP) server that connects AI coding assist
 2. **Portal dos Arquivos dos Açores** (`https://arquivos.azores.gov.pt/`): Comprehensive repository covering BPARPD (Ponta Delgada), BPARAH (Angra do Heroísmo), and BPARJJG (Horta) for parish records across all 9 islands, passport processes, and notarial documents.
 3. **Arquivo e Biblioteca da Madeira (ABM)** (`https://arquivo-abm.madeira.gov.pt/`): Comprehensive repository of Madeira historical, parish, passport, civil, and photographic records via Archeevo.
 4. **Tombo.pt** (`https://tombo.pt/`): Fast indexer and navigator for Portuguese parish registers (Batismos, Casamentos, Óbitos) organized by District, Municipality, and Parish.
-5. **Hemeroteca Digital de Lisboa** (`https://hemerotecadigital.cm-lisboa.pt/`): Major repository of Portuguese historical newspapers, periodicals, gazettes (O Século, O Bairro Camões, Diário de Lisboa, Ilustração Portugueza), obituaries, and official notices.
+5. **Hemeroteca Digital de Lisboa** (`https://hemerotecadigital.cm-lisboa.pt/`): Major repository of Portuguese historical newspapers, periodicals, gazettes (O Século, Diário de Lisboa, Ilustração Portugueza), obituaries, and official notices.
 6. **Nós Portugueses** (`https://nosportugueses.pt/`): Over 1.5 million indexed persons, noble houses, and parish book inventories across Portugal.
 7. **ANTT (Arquivo Nacional da Torre do Tombo)** (`https://antt.dglab.gov.pt/`): Archival guides, fonds descriptions, and research aids.
 8. **Geneall** (`https://geneall.net/pt/`): Premier Portuguese and European genealogical database for lineages, family trees, and noble/historical houses.

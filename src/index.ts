@@ -48,13 +48,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "tombo_search_parish",
-        description: "Search and resolve Tombo.pt direct links and indexed parish book collections for any Portuguese parish or municipality (e.g. Nazaré, Camacha, Porto da Cruz, Funchal, Ponta Delgada, Angra do Heroísmo).",
+        description: "Search and resolve Tombo.pt direct links and indexed parish book collections for any Portuguese parish or municipality (e.g. Cedofeita, Sé, Funchal, Ponta Delgada).",
         inputSchema: {
           type: "object",
           properties: {
-            parish: { type: "string", description: "Parish name (e.g. 'Pederneira', 'Camacha', 'Porto da Cruz', 'Matriz', 'Sé')." },
-            municipality: { type: "string", description: "Municipality name (e.g. 'Nazaré', 'Machico', 'Funchal', 'Ponta Delgada', 'Angra do Heroísmo')." },
-            district: { type: "string", description: "District / Region (e.g. 'Leiria', 'Madeira', 'Lisboa', 'Açores')." },
+            parish: { type: "string", description: "Parish name (e.g. 'Cedofeita', 'Santa Maria Maior', 'Sé')." },
+            municipality: { type: "string", description: "Municipality name (e.g. 'Porto', 'Braga', 'Évora', 'Funchal')." },
+            district: { type: "string", description: "District / Region (e.g. 'Porto', 'Lisboa', 'Madeira', 'Açores')." },
             year: { type: "number", description: "Optional specific year." },
             recordType: { type: "string", enum: ["batismos", "casamentos", "obitos", "passaportes", "all"] }
           }
@@ -108,7 +108,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             givenName: { type: "string", description: "First name(s) of person." },
             surname: { type: "string", description: "Surname(s) of person." },
             birthYear: { type: "number", description: "Approximate birth year." },
-            birthPlace: { type: "string", description: "Birth place or region in Portugal (e.g. 'Nazaré', 'Camacha', 'Machico', 'Funchal', 'Ponta Delgada')." },
+            birthPlace: { type: "string", description: "Birth place or region in Portugal (e.g. 'Porto', 'Viseu', 'Funchal', 'Ponta Delgada')." },
             deathYear: { type: "number", description: "Approximate death year." },
             deathPlace: { type: "string", description: "Death place." },
             fatherGivenName: { type: "string", description: "Father first name." },
@@ -387,12 +387,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "hemeroteca_search",
-        description: "Search Hemeroteca Digital de Lisboa (hemerotecadigital.cm-lisboa.pt) digitized newspapers (O Bairro Camões, O Século, Diário de Lisboa, Ilustração Portugueza, Gazeta dos Caminhos de Ferro) and generate targeted archive search links.",
+        description: "Search Hemeroteca Digital de Lisboa (hemerotecadigital.cm-lisboa.pt) digitized newspapers (O Século, Diário de Lisboa, Ilustração Portugueza, Gazeta dos Caminhos de Ferro and more) and generate targeted archive search links.",
         inputSchema: {
           type: "object",
           properties: {
             query: { type: "string", description: "Keywords, name, or search query (e.g. 'O Século', 'fotógrafo', 'necrologia')." },
-            publication: { type: "string", description: "Optional specific newspaper title (e.g. 'O Bairro Camões', 'O Século', 'Diário de Lisboa')." },
+            publication: { type: "string", description: "Optional specific newspaper title (e.g. 'O Século', 'Diário de Lisboa')." },
             year: { type: "number", description: "Optional publication year." }
           },
           required: ["query"]
@@ -400,11 +400,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "international_archives_search",
-        description: "Search and generate deep research links for international archives and academic repositories: ResearchGate (researchgate.net - scientific publications & nautical/canning/historical studies), Academia.edu (academia.edu - historical papers/canning industry), Brazil National Archives SIAN (sian.an.gov.br - ship passenger lists & foreign registers in São Paulo/Santos), APESP (Immigration and civil registries in São Paulo), and AHU (Arquivo Histórico Ultramarino ahu.dglab.gov.pt - Mozambique and overseas education personnel).",
+        description: "Search and generate deep research links for international archives and academic repositories: ResearchGate (researchgate.net - scientific publications & historical studies), Academia.edu (academia.edu - historical and genealogical papers), Brazil National Archives SIAN (sian.an.gov.br - ship passenger lists & foreign registers in São Paulo/Santos), APESP (Immigration and civil registries in São Paulo), and AHU (Arquivo Histórico Ultramarino ahu.dglab.gov.pt - records of people in the former overseas territories).",
         inputSchema: {
           type: "object",
           properties: {
-            query: { type: "string", description: "Search query, person name, or topic (e.g. 'João da Silva', 'imigração São Paulo', 'indústria conserveira')." },
+            query: { type: "string", description: "Search query, person name, or topic (e.g. 'João da Silva', 'imigração São Paulo', 'emigração portuguesa')." },
             category: { type: "string", enum: ["researchgate", "academia", "brazil_sian", "brazil_apesp", "ultramar_ahu", "all"], description: "Specific archive category or 'all'." }
           },
           required: ["query"]
@@ -441,7 +441,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           recordType: z.enum(["batismos", "casamentos", "obitos", "passaportes", "all"]).optional(),
         });
         const parsed = schema.parse(args || {});
-        const url = resolveTomboUrl(parsed);
+        const url = await resolveTomboUrl(parsed);
         return {
           content: [{ type: "text", text: JSON.stringify({ tomboUrl: url, query: parsed }, null, 2) }],
         };
